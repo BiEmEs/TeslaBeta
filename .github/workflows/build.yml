@@ -1,17 +1,44 @@
-build:
-  runs-on: ubuntu-latest
+name: Build
 
-  steps:
-    - uses: actions/checkout@v4
+concurrency:
+  group: "build"
+  cancel-in-progress: false
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '21' # or your project's version
+on:
+  push:
+    branches:
+      - master
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    - name: Build with Gradle
-      run: ./gradlew build
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Set up Node JS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Get current build number
+        id: build-number
+        run: |
+          cd .github/builds
+          npm install
+          npm run --silent get_number >> $GITHUB_OUTPUT
+
+      - name: Build
+        run: ./gradlew build -Pcommit=${{ github.sha }} -Pbuild_number=${{ steps.build-number.outputs.number }}
