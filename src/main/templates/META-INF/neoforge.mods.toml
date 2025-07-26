@@ -1,0 +1,26 @@
+modLoader = "neoforge"
+loaderVersion = "[21,)"
+license = "MIT"
+
+[[mods]]
+modId = "teslaclient"
+version = "0.1"
+displayName = "Tesla Client"
+authors = "TuNombre"
+description = '''
+WurstPlus2 port to Minecraft 1.21.4 using NeoForge.
+'''
+
+[[dependencies.teslaclient]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.teslaclient]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.4]"
+ordering = "NONE"
+side = "BOTH"
