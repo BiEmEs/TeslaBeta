@@ -17,4 +17,8 @@ public enum Category {
 	public boolean is_hidden() {
 		return hidden;
 	}
+
+	public String getName() {
+		return this.name();
+	}
 }
