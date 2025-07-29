@@ -52,7 +52,6 @@ public class EnemyUtil {
             PlayerInfo profile = profileOpt.get();
             return new Enemy(profile.getProfile().getName(), profile.getProfile().getId());
         } else {
-            // Attempt to get from Mojang API
             String json = requestUUIDs("[\"" + name + "\"]");
             if (json == null || json.isEmpty()) return null;
 
