@@ -16,6 +16,14 @@ public class ManagerSetting {
         moduleSettings.computeIfAbsent(module, m -> new ArrayList<>()).add(setting);
     }
 
+    public Setting getSettingByTag(String tag) {
+        for (Setting setting : getAllSettings()) {
+            if (setting.getTag().equalsIgnoreCase(tag)) {
+                return setting;
+            }
+        }
+        return null;
+    }
     public List<Setting> getSettingsForModule(Module module) {
         return moduleSettings.getOrDefault(module, new ArrayList<>());
     }
