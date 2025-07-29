@@ -29,20 +29,18 @@ public abstract class Module {
         this.category = category;
     }
 
-    // Getters
     public String getName() { return name; }
     public String getTag() { return tag; }
     public String getDescription() { return description; }
     public Category getCategory() { return category; }
     public boolean isEnabled() { return enabled; }
+    public boolean isActive() { return isEnabled(); }
     public int getBind() { return bind; }
     public boolean canSendToggleMessage() { return sendToggleMessage; }
 
-    // Setters
     public void setBind(int key) { this.bind = key; }
     public void setSendToggleMessage(boolean value) { this.sendToggleMessage = value; }
 
-    // Toggle
     public void toggle() {
         setEnabled(!enabled);
     }
@@ -63,7 +61,6 @@ public abstract class Module {
         }
     }
 
-    // Settings creation
     protected Setting create(String name, String tag, int value, int min, int max) {
         Setting setting = new Setting(this, name, tag, value, min, max);
         Client.getSettingManager().register(this, setting);
@@ -98,7 +95,6 @@ public abstract class Module {
         return new ArrayList<>(Arrays.asList(items));
     }
 
-    // Hooks
     public void onEnable() {}
     public void onDisable() {}
     public void onUpdate() {}
