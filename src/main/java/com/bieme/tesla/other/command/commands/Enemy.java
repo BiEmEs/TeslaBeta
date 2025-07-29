@@ -2,7 +2,7 @@ package com.bieme.tesla.other.command.commands;
 
 import net.minecraft.ChatFormatting;
 
-import com.bieme.tesla.modules.utils.EnemyUtil;
+import com.bieme.tesla.modules.utils.player.EnemyUtil;
 import com.bieme.tesla.modules.utils.chat.MessageUtil;
 import com.bieme.tesla.other.command.Command;
 
@@ -55,7 +55,7 @@ public class Enemy extends Command {
                     MessageUtil.send_client_message("Player " + ChatFormatting.DARK_AQUA + bold + message[2] + reset + " is already your Enemy D:");
                     return true;
                 } else {
-                    EnemyUtil.Enemy f = EnemyUtil.get_enemy_object(message[2]);
+                    EnemyUtil.Enemy f = EnemyUtil.getEnemyObject(message[2]);
                     if (f == null) {
                         MessageUtil.send_client_error_message("Cannot find " + red + bold + "UUID" + reset + " for that player :(");
                         return true;
