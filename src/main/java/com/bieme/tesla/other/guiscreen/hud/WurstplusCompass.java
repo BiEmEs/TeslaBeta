@@ -1,70 +1,48 @@
 package com.bieme.tesla.other.guiscreen.hud;
 
-
-import me.travis.wurstplus.Wurstplus;
-import com.bieme.tesla.other.guiscreen.render.ClientDraw;
+import com.bieme.tesla.Client;
 import com.bieme.tesla.other.guiscreen.render.pinnables.Pinnable;
-import me.travis.wurstplus.wurstplustwo.util.WurstplusMathUtil;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 
-public class WurstplusCompass extends Pinnable {
-    
-    public WurstplusCompass() {
-		super("Compass", "Compass", 1, 0, 0);
-    }
-    
-    public ClientDraw font = new ClientDraw(1);
+public class Coordinates extends Pinnable {
 
-    private static final double half_pi = Math.PI / 2;
+	public Coordinates() {
+		super("Coordinates", "Coordinates", 1, 0, 0);
+	}
 
-    private enum Direction {
-        N,
-        W,
-        S,
-        E
-    }
+	@Override
+	public void render(GuiGraphics guiGraphics) {
+		if (mc.player == null) return;
 
-    @Override
-	public void render() {
-        
-        int r = Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDStringsColorR").get_value(1);
-        int g = Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDStringsColorG").get_value(1);
-        int b = Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDStringsColorB").get_value(1);
-        int a = Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDStringsColorA").get_value(1);
+		int nl_r = Client.getSettingManager().getSettingByTag("HUDStringsColorR").getSliderValueInt();
+		int nl_g = Client.getSettingManager().getSettingByTag("HUDStringsColorG").getSliderValueInt();
+		int nl_b = Client.getSettingManager().getSettingByTag("HUDStringsColorB").getSliderValueInt();
+		int nl_a = Client.getSettingManager().getSettingByTag("HUDStringsColorA").getSliderValueInt();
 
-        for (Direction dir : Direction.values()) {
+		int posX = (int) mc.player.getX();
+		int posY = (int) mc.player.getY();
+		int posZ = (int) mc.player.getZ();
+		
+		ResourceLocation dimension = mc.player.level().dimension().location();
+		boolean inNether = dimension.toString().contains("nether");
 
-            double rad = get_pos_on_compass(dir);
-            if (dir.name().equals("N")) {
-                create_line(dir.name(), (int) (this.docking(1, dir.name()) + get_x(rad)), (int) get_y(rad), r, g, b, a);
-            } else {
-                create_line(dir.name(), (int) (this.docking(1, dir.name()) + get_x(rad)), (int) get_y(rad), 225, 225, 225, 225);
-            }
-            
-        }
+		int netherX = inNether ? posX * 8 : posX / 8;
+		int netherZ = inNether ? posZ * 8 : posZ / 8;
 
-        this.set_width(50);
-		this.set_height(50);
+		String line =
+				Client.g + "XYZ " +
+						Client.r + "[" + posX + "] " +
+						Client.r + "[" + posY + "] " +
+						Client.r + "[" + posZ + "] " +
+						Client.g + " | " +
+						Client.g + "Nether XZ " +
+						Client.r + "[" + netherX + "] " +
+						Client.r + "[" + netherZ + "]";
 
-    }
+		create_line(line, this.docking(2, line), 2, nl_r, nl_g, nl_b, nl_a);
 
-    private double get_pos_on_compass(Direction dir) {
-
-        double yaw = Math.toRadians(WurstplusMathUtil.wrap(mc.getRenderViewEntity().rotationYaw));
-        int index = dir.ordinal();
-        return yaw + (index * half_pi);
-
-    }
-
-    private double get_x(double rad) {
-        return Math.sin(rad) * (Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDCompassScale").get_value(1));
-    }
-
-    private double get_y(double rad) {
-
-        final double epic_pitch = WurstplusMathUtil.clamp2(mc.getRenderViewEntity().rotationPitch + 30f, -90f, 90f);
-        final double pitch_radians = Math.toRadians(epic_pitch);
-        return Math.cos(rad) * Math.sin(pitch_radians) * (Wurstplus.get_setting_manager().get_setting_with_tag("HUD", "HUDCompassScale").get_value(1));
-
-    }
-
+		this.set_width(this.get(line, "width") + 4);
+		this.set_height(this.get(line, "height") + 4);
+	}
 }
