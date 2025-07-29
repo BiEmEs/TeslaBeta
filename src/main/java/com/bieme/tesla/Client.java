@@ -3,6 +3,7 @@ package com.bieme.tesla;
 import com.bieme.tesla.modules.utils.chat.MessageUtil;
 import com.bieme.tesla.other.guiscreen.ClientGui;
 import com.bieme.tesla.other.manager.ManagerCommand;
+import com.bieme.tesla.other.manager.ManagerConfig;
 import com.bieme.tesla.other.manager.ManagerHack;
 import com.bieme.tesla.other.manager.ManagerFriend;
 import com.bieme.tesla.other.manager.ManagerSetting;
@@ -17,13 +18,19 @@ public class Client {
 
     public static final Minecraft mc = Minecraft.getInstance();
 
+    public static final String g = "§7";
+    public static final String r = "§c";
+
     // Managers
     private static ManagerHack hackManager;
     private static ManagerCommand commandManager;
     private static ManagerFriend friendManager;
     private static ManagerSetting settingManager;
     private static ClientGui clickGui;
+    private static ManagerConfig configManager = new ManagerConfig();
     private static MessageUtil messageUtil = new MessageUtil();
+
+    public static ClientGui click_hud = new ClientGui();
 
     public static final int KEY_GUI_ESCAPE = 1;
     public static final int KEY_DELETE = 211;
@@ -36,6 +43,7 @@ public class Client {
         commandManager = new ManagerCommand();
         friendManager = new ManagerFriend();
         clickGui = new ClientGui();
+        click_hud = clickGui;
 
         hackManager.init();
         commandManager.init();
@@ -43,9 +51,12 @@ public class Client {
         System.out.println("[" + CLIENT_NAME + "] Loaded successfully!");
     }
 
-
     public static ManagerSetting getSettingManager() {
         return settingManager;
+    }
+
+    public static ManagerConfig get_config_manager() {
+        return configManager;
     }
 
     public static ManagerHack getHackManager() {
@@ -75,4 +86,5 @@ public class Client {
     public static ManagerSetting get_setting_manager() {
         return settingManager;
     }
+
 }
