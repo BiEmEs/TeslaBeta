@@ -1,15 +1,15 @@
 package com.bieme.tesla.other.guiscreen.hud;
 
-import com.google.common.collect.Lists;
-import com.bieme.tesla.other.guiscreen.render.ClientDraw;
-import com.bieme.tesla.other.guiscreen.render.pinnables.Pinnable;
-import com.bieme.tesla.modules.hacks.Module;
 import com.bieme.tesla.Client;
-import com.bieme.tesla.modules.utils.DrawnUtil;
+import com.bieme.tesla.modules.hacks.Module;
+import com.bieme.tesla.modules.utils.render.DrawnUtil;
+import com.bieme.tesla.other.guiscreen.render.pinnables.Pinnable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.util.Mth;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,8 +25,9 @@ public class ArrayList extends Pinnable {
 	}
 
 	@Override
-	public void render() {
+	public void render(GuiGraphics guiGraphics) {
 		updateResolution();
+
 		int positionUpdateY = 2;
 		Minecraft mc = Minecraft.getInstance();
 		Font font = mc.font;
@@ -37,54 +38,51 @@ public class ArrayList extends Pinnable {
 		int nl_a = getIntSetting("HUD", "HUDStringsColorA", 255);
 
 		List<Module> prettyModules = getActiveModules().stream()
-				.sorted(Comparator.comparing(mod ->
-						getWidthString(mod)))
+				.sorted(Comparator.comparing(this::getWidthString).reversed())
 				.collect(Collectors.toList());
-
-		int count = 0;
 
 		boolean isTopR = isSettingValue("HUD", "HUDArrayList", "Top R");
 		boolean isTopL = isSettingValue("HUD", "HUDArrayList", "Top L");
 
 		if (isTopR || isTopL) {
-			prettyModules = Lists.reverse(prettyModules);
+			Collections.reverse(prettyModules);
 		}
 
-		for (Module module : prettyModules) {
-			if (module.getCategory().getTag().equals("WurstplusGUI")) continue;
+		int count = 0;
 
+		for (Module module : prettyModules) {
 			if (isHiddenTag(module.getTag())) continue;
 
 			String moduleName = module.arrayDetail() == null
 					? module.getTag()
-					: module.getTag() + Client.g + " [" + Client.r + module.arrayDetail() + Client.g + "]" + Client.r;
+					: module.getTag() + " [" + module.arrayDetail() + "]";
 
 			if (isSettingValue("HUD", "HUDArrayList", "Free")) {
-				createLine(moduleName, docking(2, moduleName), positionUpdateY, nl_r, nl_g, nl_b, nl_a);
-
+				create_line(guiGraphics, moduleName, docking(2, moduleName), positionUpdateY, nl_r, nl_g, nl_b, nl_a);
 				positionUpdateY += getHeightString(moduleName) + 2;
 
-				if (getWidthString(moduleName) > getWidth()) {
-					setWidth(getWidthString(moduleName) + 2);
+				if (getWidthString(moduleName) > get_width()) {
+					set_width(getWidthString(moduleName) + 2);
 				}
 
-				setHeight(positionUpdateY);
-
+				set_height(positionUpdateY);
 			} else {
+				int color = (nl_a << 24) | (nl_r << 16) | (nl_g << 8) | nl_b;
+
 				if (isTopR) {
-					font.drawShadow(moduleName, scaledWidth - 2 - font.width(moduleName), 3 + count * 10, new ClientDraw.TravisColor(nl_r, nl_g, nl_b, nl_a).hex());
+					guiGraphics.drawString(font, moduleName, scaledWidth - 2 - font.width(moduleName), 3 + count * 10, color, true);
 					count++;
 				}
 				if (isTopL) {
-					font.drawShadow(moduleName, 2, 3 + count * 10, new ClientDraw.TravisColor(nl_r, nl_g, nl_b, nl_a).hex());
+					guiGraphics.drawString(font, moduleName, 2, 3 + count * 10, color, true);
 					count++;
 				}
 				if (isSettingValue("HUD", "HUDArrayList", "Bottom R")) {
-					font.drawShadow(moduleName, scaledWidth - 2 - font.width(moduleName), scaledHeight - (count * 10), new ClientDraw.TravisColor(nl_r, nl_g, nl_b, nl_a).hex());
+					guiGraphics.drawString(font, moduleName, scaledWidth - 2 - font.width(moduleName), scaledHeight - (count * 10), color, true);
 					count++;
 				}
 				if (isSettingValue("HUD", "HUDArrayList", "Bottom L")) {
-					font.drawShadow(moduleName, 2, scaledHeight - (count * 10), new ClientDraw.TravisColor(nl_r, nl_g, nl_b, nl_a).hex());
+					guiGraphics.drawString(font, moduleName, 2, scaledHeight - (count * 10), color, true);
 					count++;
 				}
 			}
@@ -93,32 +91,29 @@ public class ArrayList extends Pinnable {
 
 	private void updateResolution() {
 		Minecraft mc = Minecraft.getInstance();
-
 		this.scaledWidth = mc.getWindow().getGuiScaledWidth();
 		this.scaledHeight = mc.getWindow().getGuiScaledHeight();
 		this.scaleFactor = 1;
 
-		boolean flag = mc.isUnicode();
-		int guiScale = mc.options.guiScale;
+		boolean unicode = mc.isEnforceUnicode();
+		int guiScale = mc.options.guiScale().get();
 
-		if (guiScale == 0) {
-			guiScale = 1000;
-		}
+		if (guiScale == 0) guiScale = 1000;
 
-		while (this.scaleFactor < guiScale
-				&& this.scaledWidth / (this.scaleFactor + 1) >= 320
-				&& this.scaledHeight / (this.scaleFactor + 1) >= 240) {
+		while (this.scaleFactor < guiScale &&
+				this.scaledWidth / (this.scaleFactor + 1) >= 320 &&
+				this.scaledHeight / (this.scaleFactor + 1) >= 240) {
 			++this.scaleFactor;
 		}
 
-		if (flag && this.scaleFactor % 2 != 0 && this.scaleFactor != 1) {
+		if (unicode && this.scaleFactor % 2 != 0 && this.scaleFactor != 1) {
 			--this.scaleFactor;
 		}
 
 		double scaledWidthD = this.scaledWidth / (double) this.scaleFactor;
 		double scaledHeightD = this.scaledHeight / (double) this.scaleFactor;
-		this.scaledWidth = MathHelper.ceil(scaledWidthD);
-		this.scaledHeight = MathHelper.ceil(scaledHeightD);
+		this.scaledWidth = Mth.ceil(scaledWidthD);
+		this.scaledHeight = Mth.ceil(scaledHeightD);
 	}
 
 	private int getIntSetting(String category, String tag, int defaultValue) {
