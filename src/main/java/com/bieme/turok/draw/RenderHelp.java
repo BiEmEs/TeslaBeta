@@ -1,224 +1,86 @@
-package me.travis.turok.draw;
+package com.bieme.turok.draw;
 
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.math.BlockPos;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexConsumerProvider;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLines;
+import net.minecraft.client.renderer.RenderSystem;
+import net.minecraft.client.renderer.culling.Frustum;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4fStack;
+import org.joml.Vector3f;
 
-import java.util.Arrays;
+public class RenderHelp {
 
-import static org.lwjgl.opengl.GL11.*;
+    private static final Minecraft mc = Minecraft.getInstance();
 
-/**
-* @author 086
-*
-* Update by me.
-* 08/04/20.
-*
-*/
-public class RenderHelp extends Tessellator {
-    public static RenderHelp INSTANCE = new RenderHelp();
+    public static void drawBox(PoseStack poseStack, VertexConsumerProvider bufferSource, BlockPos pos, float red, float green, float blue, float alpha) {
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 camPos = camera.getPosition();
 
-    public RenderHelp() {
-        super(0x200000);
+        double x = pos.getX() - camPos.x;
+        double y = pos.getY() - camPos.y;
+        double z = pos.getZ() - camPos.z;
+
+        poseStack.pushPose();
+        poseStack.translate(x, y, z);
+
+        VertexConsumer builder = bufferSource.getBuffer(RenderType.lines());
+
+        drawCube(builder, poseStack.last().pose(), red, green, blue, alpha);
+
+        poseStack.popPose();
     }
 
-    public static void prepare(String mode_requested) {
-    	int mode = 0;
+    private static void drawCube(VertexConsumer builder, Matrix4f matrix, float r, float g, float b, float a) {
+        float size = 1f;
 
-    	if (mode_requested.equalsIgnoreCase("quads")) {
-    		mode = GL_QUADS;
-    	} else if (mode_requested.equalsIgnoreCase("lines")) {
-    		mode = GL_LINES;
-    	}
+        
+        builder.vertex(matrix, 0, 0, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, 0, size, 0).color(r, g, b, a).endVertex();
 
-        prepare_gl();
-        begin(mode);
-    }
+        builder.vertex(matrix, size, 0, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, size, 0).color(r, g, b, a).endVertex();
 
-    public static void prepare_gl() {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        GlStateManager.glLineWidth(1.5F);
-        GlStateManager.disableTexture2D();
-        GlStateManager.depthMask(false);
-        GlStateManager.enableBlend();
-        GlStateManager.disableDepth();
-        GlStateManager.disableLighting();
-        GlStateManager.disableCull();
-        GlStateManager.enableAlpha();
-        GlStateManager.color(1, 1, 1);
-    }
+        builder.vertex(matrix, 0, 0, size).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, 0, size, size).color(r, g, b, a).endVertex();
 
-    public static void begin(int mode) {
-        INSTANCE.getBuffer().begin(mode, DefaultVertexFormats.POSITION_COLOR);
-    }
+        builder.vertex(matrix, size, 0, size).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, size, size).color(r, g, b, a).endVertex();
 
-    public static void release() {
-        render();
-        release_gl();
-    }
+       
+        builder.vertex(matrix, 0, size, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, size, 0).color(r, g, b, a).endVertex();
 
-    public static void render() {
-        INSTANCE.draw();
-    }
+        builder.vertex(matrix, 0, size, size).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, size, size).color(r, g, b, a).endVertex();
 
-    public static void release_gl() {
-        GlStateManager.enableCull();
-        GlStateManager.depthMask(true);
-        GlStateManager.enableTexture2D();
-        GlStateManager.enableBlend();
-        GlStateManager.enableDepth();
-    }
+        builder.vertex(matrix, 0, size, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, 0, size, size).color(r, g, b, a).endVertex();
 
-    public static void draw_cube(BlockPos blockPos, int argb, String sides) {
-        final int a = (argb >>> 24) & 0xFF;
-        final int r = (argb >>> 16) & 0xFF;
-        final int g = (argb >>> 8) & 0xFF;
-        final int b = argb & 0xFF;
-        draw_cube(blockPos, r, g, b, a, sides);
-    }
+        builder.vertex(matrix, size, size, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, size, size).color(r, g, b, a).endVertex();
 
-    public static void draw_cube(float x, float y, float z, int argb, String sides) {
-        final int a = (argb >>> 24) & 0xFF;
-        final int r = (argb >>> 16) & 0xFF;
-        final int g = (argb >>> 8) & 0xFF;
-        final int b = argb & 0xFF;
-        draw_cube(INSTANCE.getBuffer(), x, y, z, 1, 1, 1, r, g, b, a, sides);
-    }
+        builder.vertex(matrix, 0, 0, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, 0, 0).color(r, g, b, a).endVertex();
 
-    public static void draw_cube(BlockPos blockPos, int r, int g, int b, int a, String sides) {
-        draw_cube(INSTANCE.getBuffer(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1, 1, 1, r, g, b, a, sides);
-    }
+        builder.vertex(matrix, 0, 0, size).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, 0, size).color(r, g, b, a).endVertex();
 
-    public static void draw_cube_line(BlockPos blockPos, int argb, String sides) {
-        final int a = (argb >>> 24) & 0xFF;
-        final int r = (argb >>> 16) & 0xFF;
-        final int g = (argb >>> 8) & 0xFF;
-        final int b = argb & 0xFF;
-        draw_cube_line(blockPos, r, g, b, a, sides);
-    }
+        builder.vertex(matrix, 0, 0, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, 0, 0, size).color(r, g, b, a).endVertex();
 
-    public static void draw_cube_line(float x, float y, float z, int argb, String sides) {
-        final int a = (argb >>> 24) & 0xFF;
-        final int r = (argb >>> 16) & 0xFF;
-        final int g = (argb >>> 8) & 0xFF;
-        final int b = argb & 0xFF;
-        draw_cube_line(INSTANCE.getBuffer(), x, y, z, 1, 1, 1, r, g, b, a, sides);
-    }
-
-    public static void draw_cube_line(BlockPos blockPos, int r, int g, int b, int a, String sides) {
-        draw_cube_line(INSTANCE.getBuffer(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1, 1, 1, r, g, b, a, sides);
-    }
-
-    public static BufferBuilder get_buffer_build() {
-        return INSTANCE.getBuffer();
-    }
-
-    public static void draw_cube(final BufferBuilder buffer, float x, float y, float z, float w, float h, float d, int r, int g, int b, int a, String sides) {
-        if (((boolean) Arrays.asList(sides.split("-")).contains("down")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("up")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("north")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("south")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("south")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("south")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-    }
-
-    public static void draw_cube_line(final BufferBuilder buffer, float x, float y, float z, float w, float h, float d, int r, int g, int b, int a, String sides) {
-        if (((boolean) Arrays.asList(sides.split("-")).contains("downwest")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("upwest")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("downeast")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("upeast")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-       if (((boolean) Arrays.asList(sides.split("-")).contains("downnorth")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("upnorth")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("downsouth")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("upsouth")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("nortwest")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("norteast")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("southweast")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x, y + h, z + d).color(r, g, b, a).endVertex();
-        }
-
-        if (((boolean) Arrays.asList(sides.split("-")).contains("southeast")) || sides.equalsIgnoreCase("all")) {
-            buffer.pos(x + w, y, z + d).color(r, g, b, a).endVertex();
-            buffer.pos(x + w, y + h, z + d).color(r, g, b, a).endVertex();
-        }
+        builder.vertex(matrix, size, 0, 0).color(r, g, b, a).endVertex();
+        builder.vertex(matrix, size, 0, size).color(r, g, b, a).endVertex();
     }
 }
