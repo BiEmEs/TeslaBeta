@@ -1,7 +1,7 @@
 package com.bieme.tesla.other.command.commands;
 
 import com.bieme.tesla.modules.utils.chat.MessageUtil;
-import com.bieme.tesla.modules.utils.FriendUtil;
+import com.bieme.tesla.modules.utils.player.FriendUtil;
 import com.bieme.tesla.other.command.Command;
 import net.minecraft.ChatFormatting;
 
@@ -31,8 +31,8 @@ public class Friend extends Command {
                 if (FriendUtil.getFriends().isEmpty()) {
                     MessageUtil.send_client_message("You appear to have " + red + bold + "no" + reset + " friends :(");
                 } else {
-                    for (String friendName : FriendUtil.getFriends()) {
-                        MessageUtil.send_client_message("" + ChatFormatting.DARK_AQUA + bold + friendName);
+                    for (FriendUtil.Friend friend : FriendUtil.getFriends()) {
+                        MessageUtil.send_client_message("" + ChatFormatting.DARK_AQUA + bold + friend.getUsername());
                     }
                 }
                 return true;
