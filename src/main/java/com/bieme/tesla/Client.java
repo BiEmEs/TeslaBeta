@@ -68,4 +68,11 @@ public class Client {
         return messageUtil;
     }
 
+    public static ManagerHack get_hack_manager() {
+        return hackManager;
+    }
+
+    public static ManagerSetting get_setting_manager() {
+        return settingManager;
+    }
 }
