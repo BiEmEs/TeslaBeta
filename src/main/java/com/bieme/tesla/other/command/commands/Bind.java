@@ -19,7 +19,7 @@ public class Bind extends com.bieme.tesla.other.command.Command {
 		keyMap.put("RIGHTSHIFT", GLFW.GLFW_KEY_RIGHT_SHIFT);
 		keyMap.put("LEFTSHIFT", GLFW.GLFW_KEY_LEFT_SHIFT);
 		keyMap.put("ENTER", GLFW.GLFW_KEY_ENTER);
-		keyMap.put("NONE", -1); // Para desactivar el bind
+		keyMap.put("NONE", -1);
 	}
 
 	public Bind() {
