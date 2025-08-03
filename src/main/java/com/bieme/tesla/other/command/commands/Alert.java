@@ -3,7 +3,7 @@ package com.bieme.tesla.other.command.commands;
 import com.bieme.tesla.Client;
 import com.bieme.tesla.modules.hacks.Module;
 import com.bieme.tesla.modules.utils.chat.MessageUtil;
-import com.bieme.tesla.other.command.Command; // Asegúrate que esta es tu clase base Command
+import com.bieme.tesla.other.command.Command;
 
 public class Alert extends Command {
 
