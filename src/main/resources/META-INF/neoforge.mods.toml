@@ -6,7 +6,7 @@ license = "MIT"
 modId = "teslaclient"
 version = "0.1"
 displayName = "Tesla Client"
-authors = "TuNombre"
+authors = "BiEmE"
 description = '''
 WurstPlus2 port to Minecraft 1.21.4 using NeoForge.
 '''
