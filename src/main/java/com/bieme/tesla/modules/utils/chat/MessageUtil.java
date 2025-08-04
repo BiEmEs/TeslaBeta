@@ -1,5 +1,6 @@
 package com.bieme.tesla.modules.utils.chat;
 
+import com.bieme.tesla.modules.hacks.Module;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -19,22 +20,27 @@ public class MessageUtil {
     }
 
     public static void sendRaw(String message) {
-        if (mc.player != null) {
-            mc.player.sendSystemMessage(Component.literal(message));
+        if (mc.player != null && mc.gui != null) {
+            mc.gui.getChat().addMessage(Component.literal(message));
         }
     }
 
     public static void send_colored(String prefix, String message, String prefixColorHex, String messageColorHex) {
-        if (mc.player != null) {
+        if (mc.player != null && mc.gui != null) {
+
+            TextColor prefixColor = TextColor.parseColor(prefixColorHex).result().orElse(TextColor.fromRgb(0xFFFFFF));
+            TextColor messageColor = TextColor.parseColor(messageColorHex).result().orElse(TextColor.fromRgb(0xFFFFFF));
+
             Component pref = Component.literal(prefix)
-                    .setStyle(Style.EMPTY.withColor(TextColor.parseColor(prefixColorHex)));
+                    .setStyle(Style.EMPTY.withColor(prefixColor));
 
             Component body = Component.literal(message)
-                    .setStyle(Style.EMPTY.withColor(TextColor.parseColor(messageColorHex)));
+                    .setStyle(Style.EMPTY.withColor(messageColor));
 
-            mc.player.sendSystemMessage(Component.empty().append(pref).append(body));
+            mc.gui.getChat().addMessage(Component.empty().append(pref).append(body));
         }
     }
+
     public static void sendToggleMessage(Module module) {
         String status = module.isEnabled() ? "§aenabled" : "§cdisabled";
         send_client_message("§f" + module.getName() + " was " + status);
