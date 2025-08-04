@@ -12,8 +12,9 @@ public class ManagerCommand {
 	}
 
 	public void init() {
-		Style blueStyle = Style.EMPTY.withColor(TextColor.parseColor("#0000FF").orElse(TextColor.fromRgb(0x0000FF)));
-		command_list = new Commands(blueStyle);
+		TextColor color = TextColor.fromRgb(0x0000FF);
+		Style blueStyle = Style.EMPTY.withColor(color);
+		command_list = new Commands();
 	}
 
 	public static void set_prefix(String new_prefix) {
