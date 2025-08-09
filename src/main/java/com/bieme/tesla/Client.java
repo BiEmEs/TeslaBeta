@@ -21,12 +21,13 @@ public class Client {
     public static final String g = "§7";
     public static final String r = "§c";
 
-    // Managers
     private static ManagerHack hackManager;
     private static ManagerCommand commandManager;
     private static ManagerFriend friendManager;
     private static ManagerSetting settingManager;
+
     private static ClientGui clickGui;
+
     private static ManagerConfig configManager = new ManagerConfig();
     private static MessageUtil messageUtil = new MessageUtil();
 
@@ -82,6 +83,12 @@ public class Client {
     public static ManagerHack get_hack_manager() {
         return hackManager;
     }
+
+    public static ManagerSetting get_setting_manager() {
+        return settingManager;
+    }
+
+}
 
     public static ManagerSetting get_setting_manager() {
         return settingManager;
