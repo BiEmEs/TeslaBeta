@@ -24,6 +24,7 @@ public class ManagerSetting {
         }
         return null;
     }
+
     public List<Setting> getSettingsForModule(Module module) {
         return moduleSettings.getOrDefault(module, new ArrayList<>());
     }
@@ -34,5 +35,15 @@ public class ManagerSetting {
             all.addAll(settings);
         }
         return all;
+    }
+
+    public Setting get_setting_with_tag(String module, String setting) {
+        for (Setting s : getAllSettings()) {
+            if (s.get_parent_module().get_tag().equalsIgnoreCase(module) &&
+                    s.get_tag().equalsIgnoreCase(setting)) {
+                return s;
+            }
+        }
+        return null;
     }
 }
