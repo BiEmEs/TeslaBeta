@@ -12,12 +12,17 @@ public class Frame {
 	private final ArrayList<ModuleButton> moduleButtons = new ArrayList<>();
 	private final ClientDraw font = new ClientDraw(1);
 
+	public static int nc_r, nc_g, nc_b;
+	public static int bg_r, bg_g, bg_b, bg_a;
+	public static int bd_r, bd_g, bd_b, bd_a;
+	public static int bdw_r, bdw_g, bdw_b, bdw_a;
+
 	private int x, y, width, height;
 	private boolean open = true;
 	private boolean dragging = false;
 	private int dragX, dragY;
 
-	private boolean move = false;
+	private boolean move;
 
 	public Frame(Category category, int x, int y) {
 		this.category = category;
@@ -33,9 +38,9 @@ public class Frame {
 
 	public void render(int mouseX, int mouseY, int offset) {
 		// Fondo
-		ClientDraw.draw_rect(x, y, x + width, y + height, 30, 30, 30, 255);
+		ClientDraw.drawRect(x, y, x + width, y + height, 30, 30, 30, 255);
 		// Nombre de categoría
-		font.draw_string(category.get_name(), x + 5, y + 2, 255, 255, 255, 255);
+		font.drawString(category.getName(), x + 5, y + 2, 255, 255, 255, 255);
 
 		if (open) {
 			int currentY = y + height;
@@ -138,5 +143,9 @@ public class Frame {
 			if (button.isBinding()) return true;
 		}
 		return false;
+	}
+
+	public boolean motion(int mouseX, int mouseY) {
+		return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
 	}
 }

@@ -22,19 +22,9 @@ public class PinnableButton {
 
 	private ClientDraw font = new ClientDraw(1);
 
-	public static int nc_r = 0;
-	public static int nc_g = 0;
-	public static int nc_b = 0;
-	public static int nc_a = 0;
-
-	public static int bg_r = 0;
-	public static int bg_g = 0;
-	public static int bg_b = 0;
-	public static int bg_a = 0;
-
-	public static int bd_r = 0;
-	public static int bd_g = 0;
-	public static int bd_b = 0;
+	public static int nc_r, nc_g, nc_b;
+	public static int bg_r, bg_g, bg_b, bg_a;
+	public static int bd_r, bd_g, bd_b;
 
 	public PinnableButton(PinnableFrame master, String name, String tag) {
 		this.master = master;
