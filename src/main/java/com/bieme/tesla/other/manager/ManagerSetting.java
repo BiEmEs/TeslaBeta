@@ -16,10 +16,11 @@ public class ManagerSetting {
         moduleSettings.computeIfAbsent(module, m -> new ArrayList<>()).add(setting);
     }
 
-    public Setting getSettingByTag(String tag) {
-        for (Setting setting : getAllSettings()) {
-            if (setting.getTag().equalsIgnoreCase(tag)) {
-                return setting;
+    public Setting getSettingByTag(String category, String name) {
+        for (Setting s : getAllSettings()) {
+            if (s.get_parent_module().get_tag().equalsIgnoreCase(category) &&
+                    s.get_tag().equalsIgnoreCase(name)) {
+                return s;
             }
         }
         return null;
