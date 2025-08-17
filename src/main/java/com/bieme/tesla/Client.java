@@ -8,9 +8,15 @@ import com.bieme.tesla.other.manager.ManagerHack;
 import com.bieme.tesla.other.manager.ManagerFriend;
 import com.bieme.tesla.other.manager.ManagerSetting;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.client.Minecraft;
 
 public class Client {
+
+    // logger
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String CLIENT_NAME = "TeslaClient";
     public static final String CLIENT_VERSION = "0.1";
@@ -37,7 +43,8 @@ public class Client {
     public static final int KEY_DELETE = 211;
 
     public static void init() {
-        System.out.println("[" + CLIENT_NAME + "] Starting...");
+
+        LOGGER.info("Starting Client.");
 
         settingManager = new ManagerSetting();
         hackManager = new ManagerHack();
@@ -49,7 +56,7 @@ public class Client {
         hackManager.init();
         commandManager.init();
 
-        System.out.println("[" + CLIENT_NAME + "] Loaded successfully!");
+        LOGGER.info("Client started.");
     }
 
     public static ManagerConfig getConfigManager() {
