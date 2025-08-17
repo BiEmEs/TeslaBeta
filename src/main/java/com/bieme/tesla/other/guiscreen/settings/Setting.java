@@ -141,4 +141,23 @@ public class Setting {
 	
 	public Module get_parent_module() { return master; }
 	public String get_tag() { return tag; }
+
+	public int getValue() {
+		switch (type) {
+			case "boolean":
+				return boolValue ? 1 : 0;
+			case "combobox":
+				// returns 0
+				return 0;
+			case "label":
+				// labels don't have int values
+				return 0;
+			case "double":
+				return (int) Math.round(sliderValue);
+			case "int":
+				return (int) Math.round(sliderValue);
+			default:
+				return 0;
+		}
+	}
 }
