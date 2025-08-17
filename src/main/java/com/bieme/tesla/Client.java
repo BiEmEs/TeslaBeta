@@ -52,11 +52,7 @@ public class Client {
         System.out.println("[" + CLIENT_NAME + "] Loaded successfully!");
     }
 
-    public static ManagerSetting getSettingManager() {
-        return settingManager;
-    }
-
-    public static ManagerConfig get_config_manager() {
+    public static ManagerConfig getConfigManager() {
         return configManager;
     }
 
@@ -80,18 +76,8 @@ public class Client {
         return messageUtil;
     }
 
-    public static ManagerHack get_hack_manager() {
-        return hackManager;
-    }
-
-    public static ManagerSetting get_setting_manager() {
+    public static ManagerSetting getSettingManager() {
         return settingManager;
     }
 
-}
-
-    public static ManagerSetting get_setting_manager() {
-        return settingManager;
     }
-
-}
