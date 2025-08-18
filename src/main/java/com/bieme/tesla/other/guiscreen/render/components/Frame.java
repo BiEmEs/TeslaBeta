@@ -4,7 +4,9 @@ import com.bieme.tesla.Client;
 import com.bieme.tesla.other.guiscreen.render.ClientDraw;
 import com.bieme.tesla.modules.hacks.Category;
 import com.bieme.tesla.modules.hacks.Module;
+import net.minecraft.client.gui.GuiGraphics;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class Frame {
@@ -36,18 +38,18 @@ public class Frame {
 		}
 	}
 
-	public void render(int mouseX, int mouseY, int offset) {
+	public void render(GuiGraphics gui, int mouseX, int mouseY, int offset) {
 		// Fondo
-		ClientDraw.drawRect(x, y, x + width, y + height, 30, 30, 30, 255);
+		ClientDraw.drawRect(gui, x, y, x + width, y + height, new Color(30, 30, 30, 255));
 		// Nombre de categoría
-		font.drawString(category.getName(), x + 5, y + 2, 255, 255, 255, 255);
+		ClientDraw.drawString(gui, category.getName(), x + 5, y + 2, new Color(255, 255, 255, 255));
 
 		if (open) {
 			int currentY = y + height;
 			for (ModuleButton button : moduleButtons) {
 				button.set_x(x);
 				button.set_y(currentY);
-				button.render(mouseX, mouseY, offset);
+				button.render(gui, mouseX, mouseY, offset);
 				currentY += button.get_height();
 
 				if (button.is_open()) {

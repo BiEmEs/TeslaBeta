@@ -3,9 +3,12 @@ package com.bieme.tesla.other.guiscreen.render.components;
 import com.bieme.tesla.Client;
 import com.bieme.tesla.modules.hacks.Module;
 import com.bieme.tesla.other.guiscreen.render.ClientDraw;
+import com.bieme.tesla.other.guiscreen.render.components.widgets.Button;
 import com.bieme.tesla.other.guiscreen.settings.Setting;
 import com.bieme.tesla.other.guiscreen.render.components.widgets.*;
+import net.minecraft.client.gui.GuiGraphics;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class ModuleButton {
@@ -32,14 +35,14 @@ public class ModuleButton {
 		this.master = master;
 		this.module_name = module.getName();
 
-		this.width = font.get_string_width(module_name) + 5;
-		this.height = font.get_string_height();
+		this.width = font.getStringWidth(module_name) + 5;
+		this.height = font.getStringHeight();
 		this.save_y = 0;
 		this.settings_height = this.y + 10;
 		this.count = 0;
 
 		for (Setting setting : Client.getSettingManager().getSettingsWithModule(module)) {
-			switch (setting.get_type()) {
+			switch (setting.getType()) {
 				case "button":
 					widget.add(new Button(master, this, setting.get_tag(), settings_height));
 					break;
@@ -51,7 +54,7 @@ public class ModuleButton {
 					break;
 				case "doubleslider":
 				case "integerslider":
-					widget.add(new WurstplusSlider(master, this, setting.get_tag(), settings_height));
+					widget.add(new Slider(setting, x, settings_height, width, height));
 					break;
 			}
 			settings_height += 10;
@@ -66,7 +69,7 @@ public class ModuleButton {
 	public Frame get_master() { return master; }
 	public boolean is_open() { return opened; }
 	public boolean get_state() { return module.isEnabled(); }
-	public boolean is_binding() {
+	public boolean isBinding() {
 		for (AbstractWidget widgets : widget)
 			if (widgets.is_binding()) return true;
 		return false;
@@ -115,7 +118,7 @@ public class ModuleButton {
 		master.does_can(true);
 	}
 
-	public void render(int mx, int my, int separe) {
+	public void render(GuiGraphics gui,int mx, int my, int separe) {
 		set_width(master.get_width() - separe);
 		save_y = y + master.get_y() - 10;
 
@@ -135,10 +138,10 @@ public class ModuleButton {
 		int border_size = 1;
 
 		if (module.isEnabled()) {
-			ClientDraw.draw_rect(x, save_y, x + width - separe, save_y + height, bg_r, bg_g, bg_b, bg_a);
+			ClientDraw.drawRect(gui, x, save_y, x + width - separe, save_y + height, new Color(bg_r, bg_g, bg_b, bg_a));
 		}
 
-		font.draw_string(module_name, x + separe, save_y, nm_r, nm_g, nm_b, nm_a);
+		font.drawString(gui, module_name, x + separe, save_y, new Color(nm_r, nm_g, nm_b, nm_a));
 
 		float targetHeight = opened ? settings_height : 0;
 		animation += (targetHeight - animation) / ANIMATION_SPEED;
@@ -156,8 +159,10 @@ public class ModuleButton {
 		}
 
 		if (motion(mx, my) || (opened && widget.stream().anyMatch(w -> w.motion_pass(mx, my)))) {
-			ClientDraw.draw_rect(master.get_x() - 1, save_y, master.get_width() + 1,
-					height + (int) animation, bd_r, bd_g, bd_b, 200, border_size, "right-left");
+			ClientDraw.drawRect(gui,master.get_x() - 1, save_y, master.get_width() + 1,
+					height + (int) animation, new Color(bd_r, bd_g, bd_b, 200));
+			// border and "right-to-left" animation idk how to fix it
+			// - Nembles1000
 		}
 	}
 }

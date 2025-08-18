@@ -1,12 +1,13 @@
 package com.bieme.tesla.other.guiscreen.render.components.widgets;
 
+import com.bieme.tesla.other.guiscreen.render.components.AbstractWidget;
 import com.bieme.tesla.other.guiscreen.settings.Setting;
 import com.bieme.tesla.Client;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
-public class Slider {
+public class Slider extends AbstractWidget {
     private final Setting setting;
     private int x, y, width, height;
     private boolean dragging = false;
@@ -31,9 +32,10 @@ public class Slider {
     public void render(GuiGraphics guiGraphics, int masterY, int mouseX, int mouseY) {
         this.save_y = this.y + masterY;
 
-        int bgColor = Client.getInstance().getClickGui().getBackgroundColor();
-        int fillColor = Client.getInstance().getClickGui().getSliderFillColor();
-        int textColor = Client.getInstance().getClickGui().getTextColor();
+        // Client.getInstance() does not exist yet so it uses hard coded colors
+        int bgColor = new java.awt.Color(50, 50, 50, 255).getRGB();
+        int fillColor = new java.awt.Color(0, 150, 255, 255).getRGB();
+        int textColor = java.awt.Color.WHITE.getRGB();
 
         guiGraphics.fill(x, save_y, x + width, save_y + height, bgColor);
 
@@ -85,6 +87,45 @@ public class Slider {
     private boolean isHovered(int mouseX, int mouseY) {
         return mouseX >= x && mouseX <= x + width &&
                mouseY >= save_y && mouseY <= save_y + height;
+    }
+    @Override
+    public void set_x(int x) {
+        this.x = x;
+    }
+
+    @Override
+    public void mouse(int mx, int my, int mouse) {
+        if (is_hovering(mx, my)) {
+            if (mouse == 0) {
+                dragging = true;
+                updateSlider(mx);
+            }
+        }
+    }
+
+    @Override
+    public void release(int mx, int my, int mouse) {
+        if (mouse == 0) {
+            dragging = false;
+        }
+    }
+
+    @Override
+    public void bind(char char_, int key) {}
+
+    @Override
+    public boolean is_binding() {
+        return false;
+    }
+
+    @Override
+    public boolean motion_pass(int mx, int my) {
+        return is_hovering(mx, my);
+    }
+
+    @Override
+    public void does_can(boolean can) {
+        // this method does nothing
     }
 }
 
