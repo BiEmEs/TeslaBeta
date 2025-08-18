@@ -32,7 +32,7 @@ public class Client {
     private static ManagerFriend friendManager;
     private static ManagerSetting settingManager;
 
-    private static ClientGui clickGui;
+    public static ClientGui clickGui;
 
     private static ManagerConfig configManager = new ManagerConfig();
     private static MessageUtil messageUtil = new MessageUtil();
