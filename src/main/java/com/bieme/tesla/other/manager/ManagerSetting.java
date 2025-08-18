@@ -47,4 +47,15 @@ public class ManagerSetting {
         }
         return null;
     }
+
+    public List<Setting> getSettingsWithModule(Module module) {
+        List<Setting> moduleSettings = new ArrayList<>();
+        for (Setting setting : getAllSettings()) {
+            if (setting.get_parent_module().equals(module)) {
+                moduleSettings.add(setting);
+            }
+        }
+        return moduleSettings;
+    }
+
 }
