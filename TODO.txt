@@ -1,0 +1,8 @@
+# TODO list
+
+- finish implementing Frame.java and all the classes that depend from it.
+- fix Slider.java
+- review the HUD classes and fix pontential syntax/porting issues
+- actually initialize all modules (most won't be launched as of now)
+
+hopefully after fixing everything we can actually build successfully and run the client.
